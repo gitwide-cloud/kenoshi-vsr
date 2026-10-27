@@ -1,0 +1,25 @@
+plugins { id 'com.android.application' }
+def ndiEnabled = providers.gradleProperty('withNdi').getOrElse('false').toBoolean()
+android {
+ namespace 'com.office.lanmonitor'
+ compileSdk 35
+ ndkVersion '27.0.12077973'
+ defaultConfig {
+  applicationId 'com.office.lanmonitor'
+  minSdk 26
+  targetSdk 34
+  versionCode 7
+  versionName '0.5.0-dev'
+  if (ndiEnabled) {
+   ndk { abiFilters 'arm64-v8a' }
+   externalNativeBuild { cmake { cppFlags '-std=c++17'; arguments '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON' } }
+  }
+ }
+ if (ndiEnabled) { externalNativeBuild { cmake { path 'src/main/cpp/CMakeLists.txt'; version '3.22.1' } } }
+ testOptions { unitTests.includeAndroidResources = true }
+ compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}
+
+dependencies { testImplementation "junit:junit:4.13.2"; testImplementation "org.robolectric:robolectric:4.14.1" }
+
+dependencies { implementation "com.google.android.gms:play-services-cast-framework:22.3.1" }
